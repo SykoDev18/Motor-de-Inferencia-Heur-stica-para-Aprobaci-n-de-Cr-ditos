@@ -1,0 +1,184 @@
+{
+  "_meta": {
+    "sistema": "MIHAC v1.0",
+    "descripcion": "Base de Conocimiento — 15 Reglas Heurísticas IF-THEN",
+    "nota": "Para agregar reglas, añadir objetos a 'reglas'. El motor las carga dinámicamente. Tipos: 'directa' (una condición) | 'compensacion' (múltiples condiciones AND).",
+    "total_reglas": 15,
+    "formato_condicion_directa": "condicion_campo + condicion_operador + condicion_valor",
+    "formato_condicion_compensacion": "lista 'condiciones' con {campo, operador, valor}. Puede incluir 'campo_referencia' y 'factor' para comparaciones cruzadas."
+  },
+  "reglas": [
+    {
+      "id": "R001",
+      "descripcion": "Premio por historial crediticio bueno",
+      "modulo": "historial",
+      "condicion_campo": "historial_crediticio",
+      "condicion_operador": "==",
+      "condicion_valor": 2,
+      "impacto_puntos": 20,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R002",
+      "descripcion": "Penalización por historial crediticio malo",
+      "modulo": "historial",
+      "condicion_campo": "historial_crediticio",
+      "condicion_operador": "==",
+      "condicion_valor": 0,
+      "impacto_puntos": -25,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R003",
+      "descripcion": "Estabilidad laboral alta (5+ años)",
+      "modulo": "estabilidad",
+      "condicion_campo": "antiguedad_laboral",
+      "condicion_operador": ">=",
+      "condicion_valor": 5,
+      "impacto_puntos": 15,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R004",
+      "descripcion": "Sin trayectoria laboral (menos de 1 año)",
+      "modulo": "estabilidad",
+      "condicion_campo": "antiguedad_laboral",
+      "condicion_operador": "<",
+      "condicion_valor": 1,
+      "impacto_puntos": -10,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R005",
+      "descripcion": "Arraigo por vivienda propia",
+      "modulo": "estabilidad",
+      "condicion_campo": "tipo_vivienda",
+      "condicion_operador": "==",
+      "condicion_valor": "Propia",
+      "impacto_puntos": 10,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R006",
+      "descripcion": "Crédito productivo (Negocio)",
+      "modulo": "proposito",
+      "condicion_campo": "proposito_credito",
+      "condicion_operador": "==",
+      "condicion_valor": "Negocio",
+      "impacto_puntos": 8,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R007",
+      "descripcion": "Inversión en capital humano (Educación)",
+      "modulo": "proposito",
+      "condicion_campo": "proposito_credito",
+      "condicion_operador": "==",
+      "condicion_valor": "Educacion",
+      "impacto_puntos": 6,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R008",
+      "descripcion": "Gasto no productivo (Vacaciones)",
+      "modulo": "proposito",
+      "condicion_campo": "proposito_credito",
+      "condicion_operador": "==",
+      "condicion_valor": "Vacaciones",
+      "impacto_puntos": -8,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R009",
+      "descripcion": "Perfil de alto riesgo por juventud (menor de 21)",
+      "modulo": "perfil",
+      "condicion_campo": "edad",
+      "condicion_operador": "<",
+      "condicion_valor": 21,
+      "impacto_puntos": -12,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R010",
+      "descripcion": "Carga familiar crítica (4 o más dependientes)",
+      "modulo": "perfil",
+      "condicion_campo": "numero_dependientes",
+      "condicion_operador": ">=",
+      "condicion_valor": 4,
+      "impacto_puntos": -10,
+      "tipo": "directa",
+      "activa": true
+    },
+    {
+      "id": "R011",
+      "descripcion": "Historial neutro compensado por solvencia y estabilidad",
+      "modulo": "compensacion",
+      "condiciones": [
+        {"campo": "historial_crediticio", "operador": "==", "valor": 1},
+        {"campo": "dti", "operador": "<", "valor": 0.25},
+        {"campo": "antiguedad_laboral", "operador": ">=", "valor": 3}
+      ],
+      "impacto_puntos": 15,
+      "tipo": "compensacion",
+      "activa": true
+    },
+    {
+      "id": "R012",
+      "descripcion": "Margen de ingreso amplio sobre la cuota estimada",
+      "modulo": "compensacion",
+      "condiciones": [
+        {"campo": "ingreso_mensual", "operador": ">=", "campo_referencia": "monto_credito", "factor": 0.25},
+        {"campo": "historial_crediticio", "operador": "!=", "valor": 0}
+      ],
+      "impacto_puntos": 10,
+      "tipo": "compensacion",
+      "activa": true
+    },
+    {
+      "id": "R013",
+      "descripcion": "Cliente sin deudas activas con trayectoria laboral",
+      "modulo": "compensacion",
+      "condiciones": [
+        {"campo": "total_deuda_actual", "operador": "==", "valor": 0},
+        {"campo": "antiguedad_laboral", "operador": ">=", "valor": 2}
+      ],
+      "impacto_puntos": 12,
+      "tipo": "compensacion",
+      "activa": true
+    },
+    {
+      "id": "R014",
+      "descripcion": "DTI alto: penalización por sobreendeudamiento",
+      "modulo": "solvencia",
+      "condicion_campo": "dti",
+      "condicion_operador": ">",
+      "condicion_valor": 0.40,
+      "impacto_puntos": -20,
+      "tipo": "directa",
+      "flag": "DTI_ALTO_PENALIZADO",
+      "activa": true
+    },
+    {
+      "id": "R015",
+      "descripcion": "Perfil de máxima estabilidad: sin cargas, con propiedad y trayectoria",
+      "modulo": "compensacion",
+      "condiciones": [
+        {"campo": "numero_dependientes", "operador": "==", "valor": 0},
+        {"campo": "tipo_vivienda", "operador": "==", "valor": "Propia"},
+        {"campo": "antiguedad_laboral", "operador": ">=", "valor": 3}
+      ],
+      "impacto_puntos": 8,
+      "tipo": "compensacion",
+      "activa": true
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "_meta": {
+    "sistema": "MIHAC v1.0",
+    "descripcion": "Umbrales de decisión del sistema",
+    "nota": "Estos umbrales determinan los puntos de corte para el dictamen final. Para ajustarlos, modificar este archivo. Nunca cambiar umbrales directamente en código Python."
+  },
+  "dictamen": {
+    "APROBADO": {
+      "score_minimo": 80,
+      "etiqueta": "APROBADO",
+      "color_hex": "#28a745",
+      "descripcion": "El solicitante cumple satisfactoriamente los criterios de riesgo."
+    },
+    "REVISION_MANUAL": {
+      "score_minimo": 60,
+      "score_maximo": 79,
+      "etiqueta": "REVISION_MANUAL",
+      "color_hex": "#ffc107",
+      "descripcion": "El perfil presenta factores mixtos que requieren evaluación humana."
+    },
+    "RECHAZADO": {
+      "score_maximo": 59,
+      "etiqueta": "RECHAZADO",
+      "color_hex": "#dc3545",
+      "descripcion": "El solicitante no cumple los criterios mínimos de riesgo aceptable."
+    }
+  },
+  "dti": {
+    "critico": 0.40,
+    "alto": 0.35,
+    "moderado": 0.25,
+    "bajo": 0.15,
+    "descripcion": {
+      "critico": "DTI > 0.40: Sobreendeudamiento. Penalización fuerte.",
+      "alto": "DTI 0.35–0.40: Riesgo elevado. Atención.",
+      "moderado": "DTI 0.25–0.35: Carga de deuda aceptable.",
+      "bajo": "DTI < 0.25: Carga de deuda saludable. Elegible a compensación."
+    }
+  },
+  "scoring": {
+    "score_base_inicial": 50,
+    "score_minimo": 0,
+    "score_maximo": 100,
+    "descripcion": "El score parte de 50 (neutro) y se ajusta con el scoring ponderado + reglas heurísticas."
+  },
+  "monto_credito_modificador": {
+    "descripcion": "Si el monto solicitado es alto, se eleva el umbral de exigencia.",
+    "tramos": [
+      {
+        "rango": "500–5000",
+        "monto_min": 500,
+        "monto_max": 5000,
+        "ajuste_umbral": 0,
+        "nota": "Microcrédito estándar. Sin ajuste."
+      },
+      {
+        "rango": "5001–15000",
+        "monto_min": 5001,
+        "monto_max": 15000,
+        "ajuste_umbral": 3,
+        "nota": "Crédito medio. Se requieren +3 puntos de score."
+      },
+      {
+        "rango": "15001–30000",
+        "monto_min": 15001,
+        "monto_max": 30000,
+        "ajuste_umbral": 5,
+        "nota": "Crédito alto. Se requieren +5 puntos de score."
+      },
+      {
+        "rango": "30001–50000",
+        "monto_min": 30001,
+        "monto_max": 50000,
+        "ajuste_umbral": 8,
+        "nota": "Crédito máximo. Se requieren +8 puntos de score."
+      }
+    ]
+  },
+  "antiguedad_laboral": {
+    "riesgo_alto": 1,
+    "riesgo_moderado": 2,
+    "estable": 3,
+    "descripcion": {
+      "riesgo_alto": "< 1 año: Inestabilidad laboral.",
+      "riesgo_moderado": "1–2 años: Estabilidad en construcción.",
+      "estable": "> 3 años: Estabilidad demostrada."
+    }
+  },
+  "edad": {
+    "riesgo_alto": 21,
+    "rango_optimo_min": 25,
+    "rango_optimo_max": 60,
+    "descripcion": "Menores de 21 representan riesgo alto. Rango 25-60 es óptimo."
+  }
+}
