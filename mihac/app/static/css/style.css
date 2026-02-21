@@ -1,0 +1,215 @@
+/* ============================================================
+   MIHAC — Estilos personalizados
+   Motor de Inferencia Heurística para Aprobación de Créditos
+   ============================================================ */
+
+/* ---- Paleta de colores (variables CSS) ---- */
+:root {
+    --mihac-navy:       #0D1B2A;
+    --mihac-azul:       #1B4F8A;
+    --mihac-teal:       #0E7C7B;
+    --mihac-teal-claro: #17BEBB;
+    --mihac-off-white:  #F0F4F8;
+    --mihac-gris-claro: #E2E8F0;
+    --mihac-gris-medio: #64748B;
+    --mihac-rojo:       #EF4444;
+    --mihac-ambar:      #F59E0B;
+    --mihac-verde:      #10B981;
+}
+
+/* ---- Tipografía global ---- */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--mihac-off-white);
+    color: #1e293b;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main.container {
+    flex: 1 0 auto;
+}
+
+/* ---- Navbar ---- */
+.navbar-mihac {
+    background-color: var(--mihac-navy) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-mihac .navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #ffffff !important;
+}
+
+.navbar-mihac .nav-link {
+    color: rgba(255, 255, 255, 0.75) !important;
+    font-weight: 500;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.navbar-mihac .nav-link:hover {
+    color: #ffffff !important;
+    border-bottom-color: var(--mihac-teal-claro);
+}
+
+.navbar-mihac .nav-link.active {
+    color: #ffffff !important;
+    border-bottom-color: var(--mihac-teal-claro);
+}
+
+/* ---- Tarjetas (cards) ---- */
+.card {
+    border: 1px solid var(--mihac-gris-claro);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+/* ---- Botones ---- */
+.btn-primary {
+    background-color: var(--mihac-azul) !important;
+    border-color: var(--mihac-azul) !important;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--mihac-teal) !important;
+    border-color: var(--mihac-teal) !important;
+}
+
+.btn-outline-primary {
+    color: var(--mihac-azul) !important;
+    border-color: var(--mihac-azul) !important;
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--mihac-azul) !important;
+    border-color: var(--mihac-azul) !important;
+    color: #ffffff !important;
+}
+
+/* ---- Badges de dictamen ---- */
+.badge-aprobado {
+    background-color: var(--mihac-verde) !important;
+    color: #ffffff;
+}
+
+.badge-revision {
+    background-color: var(--mihac-ambar) !important;
+    color: #1e293b;
+}
+
+.badge-rechazado {
+    background-color: var(--mihac-rojo) !important;
+    color: #ffffff;
+}
+
+/* ---- Formularios ---- */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--mihac-teal-claro);
+    box-shadow: 0 0 0 0.2rem rgba(23, 190, 187, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--mihac-navy);
+    margin-bottom: 0.3rem;
+}
+
+/* ---- Footer ---- */
+.footer-mihac {
+    background-color: var(--mihac-navy);
+    color: rgba(255, 255, 255, 0.6);
+    padding: 1rem 0;
+    flex-shrink: 0;
+}
+
+.footer-mihac a {
+    color: var(--mihac-teal-claro);
+    text-decoration: none;
+}
+
+.footer-mihac a:hover {
+    color: #ffffff;
+}
+
+/* ---- Score visual (gauge / barra) ---- */
+.score-bar {
+    height: 12px;
+    border-radius: 6px;
+    background-color: var(--mihac-gris-claro);
+    overflow: hidden;
+}
+
+.score-bar .score-fill {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.6s ease;
+}
+
+.score-fill.score-bajo  { background-color: var(--mihac-rojo); }
+.score-fill.score-medio { background-color: var(--mihac-ambar); }
+.score-fill.score-alto  { background-color: var(--mihac-verde); }
+
+/* ---- Tabla historial ---- */
+.table-mihac thead {
+    background-color: var(--mihac-navy);
+    color: #ffffff;
+}
+
+.table-mihac tbody tr:hover {
+    background-color: rgba(23, 190, 187, 0.08);
+}
+
+/* ---- Utilidades ---- */
+.text-mihac-navy  { color: var(--mihac-navy); }
+.text-mihac-azul  { color: var(--mihac-azul); }
+.text-mihac-teal  { color: var(--mihac-teal); }
+.bg-mihac-navy    { background-color: var(--mihac-navy); }
+.bg-mihac-azul    { background-color: var(--mihac-azul); }
+.bg-mihac-teal    { background-color: var(--mihac-teal); }
+
+/* ---- Animación de carga ---- */
+.spinner-mihac {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid var(--mihac-gris-claro);
+    border-top-color: var(--mihac-teal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---- Responsive ajustes ---- */
+@media (max-width: 768px) {
+    .card {
+        border-radius: 8px;
+    }
+
+    .navbar-mihac .navbar-brand {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Resultado — Evaluación #{{ evaluacion.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-mihac-navy text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    Resultado de la Evaluación #{{ evaluacion.id }}
+                </h5>
+            </div>
+            <div class="card-body text-center py-5">
+                <!-- Score grande -->
+                <div class="mb-3">
+                    <span class="display-1 fw-bold"
+                          style="color: {{ evaluacion.dictamen | color_dictamen }};">
+                        {{ evaluacion.score_final }}
+                    </span>
+                    <span class="text-muted fs-4">/ 100</span>
+                </div>
+
+                <!-- Badge dictamen -->
+                <span class="badge fs-5 px-4 py-2 {{ evaluacion.dictamen | clase_badge }}">
+                    {{ evaluacion.dictamen | replace("_", " ") }}
+                </span>
+
+                <!-- Info básica -->
+                <div class="row mt-4 text-start">
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">DTI Ratio</p>
+                        <p class="fw-bold">{{ "%.1f"|format(evaluacion.dti_ratio * 100) }}%
+                            <small class="text-muted">({{ evaluacion.dti_clasificacion }})</small>
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Monto solicitado</p>
+                        <p class="fw-bold">${{ "{:,.2f}".format(evaluacion.monto_credito) }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="text-muted mb-1">Umbral aplicado</p>
+                        <p class="fw-bold">{{ evaluacion.umbral_aplicado }} pts</p>
+                    </div>
+                </div>
+
+                <hr>
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    La vista completa con reglas, sub-scores y explicación
+                    estará disponible en el Entregable 3.
+                </p>
+
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Nueva Evaluación
+                    </a>
+                    <a href="{{ url_for('main.historial') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-clock-history me-1"></i> Historial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

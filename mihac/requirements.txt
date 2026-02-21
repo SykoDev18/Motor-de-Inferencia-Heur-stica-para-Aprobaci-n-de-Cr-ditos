@@ -10,6 +10,11 @@ Jinja2>=3.1.0
 # --- Base de Datos ---
 SQLAlchemy==2.0.36
 Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+
+# --- Formularios ---
+Flask-WTF==1.2.1
+WTForms==3.1.1
 
 # --- Datos y Métricas ---
 pandas>=2.2.0

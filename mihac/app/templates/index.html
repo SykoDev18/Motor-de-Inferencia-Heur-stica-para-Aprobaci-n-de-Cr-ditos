@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% block title %}Nueva Evaluación{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-8">
+
+        <!-- Encabezado -->
+        <div class="text-center mb-4">
+            <h2 class="text-mihac-navy fw-bold">
+                <i class="bi bi-clipboard-check me-2"></i>Nueva Evaluación Crediticia
+            </h2>
+            <p class="text-muted">
+                Ingresa los datos del solicitante para obtener el dictamen del motor MIHAC.
+            </p>
+        </div>
+
+        <!-- Formulario -->
+        <form method="POST" action="{{ url_for('main.index') }}" id="formEvaluacion" novalidate>
+            {{ form.hidden_tag() }}
+
+            <!-- ═══ Sección 1: Datos Personales ═══ -->
+            <div class="card mb-4">
+                <div class="card-header bg-mihac-navy text-white">
+                    <i class="bi bi-person me-2"></i>Datos Personales
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Edad -->
+                        <div class="col-md-4">
+                            {{ form.edad.label(class="form-label") }}
+                            {{ form.edad(type="number", id="edad") }}
+                            {% if form.edad.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.edad.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Dependientes -->
+                        <div class="col-md-4">
+                            {{ form.numero_dependientes.label(class="form-label") }}
+                            {{ form.numero_dependientes(type="number", id="dependientes") }}
+                            {% if form.numero_dependientes.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.numero_dependientes.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Tipo de vivienda -->
+                        <div class="col-md-4">
+                            {{ form.tipo_vivienda.label(class="form-label") }}
+                            {{ form.tipo_vivienda(id="vivienda") }}
+                            {% if form.tipo_vivienda.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.tipo_vivienda.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Sección 2: Información Financiera ═══ -->
+            <div class="card mb-4">
+                <div class="card-header bg-mihac-navy text-white">
+                    <i class="bi bi-cash-stack me-2"></i>Información Financiera
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Ingreso mensual -->
+                        <div class="col-md-6">
+                            {{ form.ingreso_mensual.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.ingreso_mensual(type="number", id="ingreso") }}
+                            </div>
+                            {% if form.ingreso_mensual.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.ingreso_mensual.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Deuda actual -->
+                        <div class="col-md-6">
+                            {{ form.total_deuda_actual.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.total_deuda_actual(type="number", id="deuda") }}
+                            </div>
+                            {% if form.total_deuda_actual.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.total_deuda_actual.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- DTI Preview en tiempo real -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center gap-3">
+                                <span class="text-muted small fw-bold">DTI Estimado:</span>
+                                <div class="score-bar flex-grow-1">
+                                    <div class="score-fill" id="dtiBar" style="width: 0%;"></div>
+                                </div>
+                                <span class="badge bg-secondary" id="dtiBadge">0.0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Sección 3: Historial y Empleo ═══ -->
+            <div class="card mb-4">
+                <div class="card-header bg-mihac-navy text-white">
+                    <i class="bi bi-briefcase me-2"></i>Historial y Empleo
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Historial crediticio -->
+                        <div class="col-md-6">
+                            {{ form.historial_crediticio.label(class="form-label") }}
+                            {{ form.historial_crediticio(id="historial") }}
+                            {% if form.historial_crediticio.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.historial_crediticio.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Antigüedad laboral -->
+                        <div class="col-md-6">
+                            {{ form.antiguedad_laboral.label(class="form-label") }}
+                            {{ form.antiguedad_laboral(type="number", id="antiguedad") }}
+                            {% if form.antiguedad_laboral.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.antiguedad_laboral.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Sección 4: Crédito Solicitado ═══ -->
+            <div class="card mb-4">
+                <div class="card-header bg-mihac-navy text-white">
+                    <i class="bi bi-credit-card me-2"></i>Crédito Solicitado
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Propósito -->
+                        <div class="col-md-6">
+                            {{ form.proposito_credito.label(class="form-label") }}
+                            {{ form.proposito_credito(id="proposito") }}
+                            {% if form.proposito_credito.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.proposito_credito.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Monto solicitado -->
+                        <div class="col-md-6">
+                            {{ form.monto_credito.label(class="form-label") }}
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.monto_credito(type="number", id="monto") }}
+                            </div>
+                            {% if form.monto_credito.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.monto_credito.errors[0] }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Botón Evaluar ═══ -->
+            <div class="d-grid mb-4">
+                {{ form.submit() }}
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/formulario.js') }}"></script>
+{% endblock %}
