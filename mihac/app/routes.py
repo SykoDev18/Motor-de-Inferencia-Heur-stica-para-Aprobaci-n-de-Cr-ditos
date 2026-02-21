@@ -116,26 +116,100 @@ def index():
 
 @main.route("/resultado/<int:eval_id>")
 def resultado(eval_id):
-    """Muestra el resultado detallado de una evaluación.
+    """Muestra el resultado detallado de una evaluación."""
+    from app.utils import clasificar_dti
 
-    Se implementará completamente en Entregable 3.
-    Por ahora redirige al index con flash informativo.
-    """
     evaluacion = Evaluacion.query.get_or_404(eval_id)
-    # Stub: en Entregable 3 se renderizará resultado.html
+    reglas = evaluacion.get_reglas_list()
+    sub_scores = evaluacion.get_sub_scores_dict()
+    dti_info = clasificar_dti(evaluacion.dti_ratio)
+
+    # Preparar info de sub-scores para el template
+    maximos = {
+        "solvencia": 40,
+        "estabilidad": 30,
+        "historial_score": 20,
+        "perfil": 10,
+    }
+    labels = {
+        "solvencia": "Solvencia",
+        "estabilidad": "Estabilidad",
+        "historial_score": "Historial",
+        "perfil": "Perfil",
+    }
+    sub_scores_info = {}
+    for key, max_val in maximos.items():
+        valor = sub_scores.get(key, 0)
+        pct = (valor / max_val * 100) if max_val > 0 else 0
+        sub_scores_info[key] = {
+            "label": labels.get(key, key),
+            "valor": valor,
+            "max": max_val,
+            "pct": round(pct, 1),
+            "color": (
+                "#10B981" if pct >= 60
+                else "#F59E0B" if pct >= 30
+                else "#EF4444"
+            ),
+        }
+
     return render_template(
-        "resultado_stub.html", evaluacion=evaluacion
+        "resultado.html",
+        ev=evaluacion,
+        reglas=reglas,
+        sub_scores_info=sub_scores_info,
+        dti_info=dti_info,
     )
 
 
 # ════════════════════════════════════════════════════════════
-# RUTA: HISTORIAL (stub — Entregable 3)
+# RUTA: HISTORIAL DE EVALUACIONES
 # ════════════════════════════════════════════════════════════
+
+PER_PAGE = 15
 
 @main.route("/historial")
 def historial():
-    """Historial de evaluaciones — se implementará en Entregable 3."""
-    return render_template("index.html", form=EvaluacionForm())
+    """Historial paginado de evaluaciones con filtros."""
+    # Parámetros de filtro
+    filtro_dictamen = request.args.get("dictamen", "").strip()
+    filtro_orden = request.args.get("orden", "reciente").strip()
+    pagina = request.args.get("page", 1, type=int)
+
+    # Query base
+    query = Evaluacion.query
+
+    # Filtro por dictamen
+    if filtro_dictamen in ("APROBADO", "RECHAZADO", "REVISION_MANUAL"):
+        query = query.filter(Evaluacion.dictamen == filtro_dictamen)
+
+    # Ordenamiento
+    orden_map = {
+        "reciente": Evaluacion.timestamp.desc(),
+        "antiguo": Evaluacion.timestamp.asc(),
+        "score_alto": Evaluacion.score_final.desc(),
+        "score_bajo": Evaluacion.score_final.asc(),
+    }
+    orden = orden_map.get(filtro_orden, Evaluacion.timestamp.desc())
+    query = query.order_by(orden)
+
+    # Contar total
+    total = query.count()
+    paginas = max(1, (total + PER_PAGE - 1) // PER_PAGE)
+    pagina = max(1, min(pagina, paginas))
+
+    # Paginar
+    evaluaciones = query.offset((pagina - 1) * PER_PAGE).limit(PER_PAGE).all()
+
+    return render_template(
+        "historial.html",
+        evaluaciones=evaluaciones,
+        total=total,
+        pagina=pagina,
+        paginas=paginas,
+        filtro_dictamen=filtro_dictamen,
+        filtro_orden=filtro_orden,
+    )
 
 
 # ════════════════════════════════════════════════════════════

@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block title %}Resultado — Evaluación #{{ ev.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+
+        <!-- ═══ Encabezado ═══ -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="text-mihac-navy fw-bold mb-0">
+                <i class="bi bi-file-earmark-check me-2"></i>Evaluación #{{ ev.id }}
+            </h2>
+            <small class="text-muted">
+                <i class="bi bi-calendar3 me-1"></i>
+                {{ ev.timestamp.strftime('%d/%m/%Y %H:%M') }}
+            </small>
+        </div>
+
+        <!-- ═══ Fila 1: Score + Dictamen + DTI ═══ -->
+        <div class="row g-4 mb-4">
+
+            <!-- Score principal -->
+            <div class="col-md-4">
+                <div class="card h-100 text-center">
+                    <div class="card-body py-4">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Score Final</p>
+                        <div class="position-relative d-inline-block">
+                            <canvas id="scoreGauge" width="180" height="180"></canvas>
+                            <div class="position-absolute top-50 start-50 translate-middle">
+                                <span class="display-3 fw-bold" style="color: {{ ev.dictamen | color_dictamen }};">
+                                    {{ ev.score_final }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge fs-5 px-4 py-2 {{ ev.dictamen | clase_badge }}">
+                                {{ ev.dictamen | replace("_", " ") }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DTI -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body py-4">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Ratio Deuda/Ingreso (DTI)</p>
+                        <div class="text-center mb-3">
+                            <span class="display-5 fw-bold" style="color: {{ dti_info.color }};">
+                                {{ "%.1f"|format(ev.dti_ratio * 100) }}%
+                            </span>
+                        </div>
+                        <div class="score-bar mb-2">
+                            <div class="score-fill score-{{ 'alto' if ev.dti_ratio < 0.25 else ('medio' if ev.dti_ratio < 0.40 else 'bajo') }}"
+                                 style="width: {{ [ev.dti_ratio * 100, 100] | min }}%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted">
+                            <span>0%</span>
+                            <span class="badge {{ dti_info.clase }}">{{ ev.dti_clasificacion }}</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen rápido -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body py-4">
+                        <p class="text-muted small mb-1 fw-bold text-uppercase">Resumen</p>
+                        <table class="table table-sm table-borderless mb-0">
+                            <tr>
+                                <td class="text-muted">Monto</td>
+                                <td class="fw-bold text-end">{{ ev.monto_credito | moneda }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Ingreso</td>
+                                <td class="fw-bold text-end">{{ ev.ingreso_mensual | moneda }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Deuda actual</td>
+                                <td class="fw-bold text-end">{{ ev.total_deuda_actual | moneda }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Umbral</td>
+                                <td class="fw-bold text-end">{{ ev.umbral_aplicado }} pts</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Reglas activas</td>
+                                <td class="fw-bold text-end">{{ reglas | length }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Fila 2: Sub-Scores ═══ -->
+        <div class="card mb-4">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-bar-chart me-2"></i>Sub-Scores por Dimensión
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    {% for nombre, info in sub_scores_info.items() %}
+                    <div class="col-md-6 col-lg-3">
+                        <div class="text-center">
+                            <p class="fw-bold text-mihac-navy mb-1">{{ info.label }}</p>
+                            <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+                                <span class="fs-3 fw-bold" style="color: {{ info.color }};">{{ info.valor }}</span>
+                                <span class="text-muted small">/ {{ info.max }}</span>
+                            </div>
+                            <div class="score-bar mx-3">
+                                <div class="score-fill score-{{ 'alto' if info.pct >= 60 else ('medio' if info.pct >= 30 else 'bajo') }}"
+                                     style="width: {{ info.pct }}%;"></div>
+                            </div>
+                            <small class="text-muted">{{ info.pct | int }}%</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Fila 3: Reglas Activadas ═══ -->
+        <div class="card mb-4">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-lightning me-2"></i>Reglas Heurísticas Activadas
+                <span class="badge bg-light text-dark ms-2">{{ reglas | length }}</span>
+            </div>
+            <div class="card-body">
+                {% if reglas %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-mihac mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">ID</th>
+                                <th>Descripción</th>
+                                <th style="width: 100px;">Tipo</th>
+                                <th style="width: 100px;" class="text-end">Impacto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in reglas %}
+                            <tr>
+                                <td><code>{{ r.id }}</code></td>
+                                <td>{{ r.descripcion }}</td>
+                                <td>
+                                    {% if r.tipo == "compensacion" %}
+                                        <span class="badge bg-info text-dark">Compensación</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Directa</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end fw-bold {{ 'text-success' if r.impacto > 0 else 'text-danger' }}">
+                                    {{ "+" if r.impacto > 0 else "" }}{{ r.impacto }} pts
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-0">
+                    <i class="bi bi-check-circle me-1"></i>
+                    No se activaron reglas heurísticas adicionales.
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ═══ Fila 4: Datos del Solicitante ═══ -->
+        <div class="card mb-4">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-person-vcard me-2"></i>Datos del Solicitante
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Edad</p>
+                        <p class="fw-bold mb-2">{{ ev.edad }} años</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Ingreso mensual</p>
+                        <p class="fw-bold mb-2">{{ ev.ingreso_mensual | moneda }}</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Deuda actual</p>
+                        <p class="fw-bold mb-2">{{ ev.total_deuda_actual | moneda }}</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Historial crediticio</p>
+                        <p class="fw-bold mb-2">{{ ev.historial_crediticio | texto_historial }}</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Antigüedad laboral</p>
+                        <p class="fw-bold mb-2">{{ ev.antiguedad_laboral }} años</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Dependientes</p>
+                        <p class="fw-bold mb-2">{{ ev.numero_dependientes }}</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Vivienda</p>
+                        <p class="fw-bold mb-2">{{ ev.tipo_vivienda }}</p>
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <p class="text-muted small mb-0">Propósito</p>
+                        <p class="fw-bold mb-2">{{ ev.proposito_credito }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══ Fila 5: Explicación en Lenguaje Natural ═══ -->
+        <div class="card mb-4">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-chat-left-text me-2"></i>Explicación del Motor
+            </div>
+            <div class="card-body">
+                <pre class="mb-0" style="white-space: pre-wrap; font-family: 'Inter', sans-serif; font-size: 0.9rem; color: #1e293b;">{{ ev.reporte_explicacion }}</pre>
+            </div>
+        </div>
+
+        <!-- ═══ Acciones ═══ -->
+        <div class="d-flex gap-2 justify-content-center mb-4">
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Nueva Evaluación
+            </a>
+            <a href="{{ url_for('main.historial') }}" class="btn btn-outline-primary">
+                <i class="bi bi-clock-history me-1"></i> Historial
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── Score Gauge (semicírculo con Chart.js) ────────────────
+document.addEventListener("DOMContentLoaded", () => {
+    const score = {{ ev.score_final }};
+    const color = "{{ ev.dictamen | color_dictamen }}";
+    const ctx = document.getElementById("scoreGauge");
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: "doughnut",
+        data: {
+            datasets: [{
+                data: [score, 100 - score],
+                backgroundColor: [color, "#E2E8F0"],
+                borderWidth: 0,
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: "75%",
+            rotation: -90,
+            circumference: 180,
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+        }
+    });
+});
+</script>
+{% endblock %}
