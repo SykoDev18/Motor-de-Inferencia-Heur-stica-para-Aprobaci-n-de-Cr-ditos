@@ -180,19 +180,20 @@ _PROFILES: dict[str, dict[str, Any]] = {
         "nombre": "Monto Alto Exigente (Umbral 85)",
         "descripcion": (
             "Monto > $20,000 activa el umbral elevado "
-            "de 85 puntos. Buen perfil que con umbral "
-            "normal aprobaría, pero con 85 puede quedar "
-            "en REVISION_MANUAL."
+            "de 85 puntos. Perfil con historial neutro "
+            "y antigüedad moderada que con umbral normal "
+            "(80) aprobaría, pero con 85 queda en "
+            "REVISION_MANUAL."
         ),
         "dictamen_esperado": "REVISION_MANUAL",
         "datos": {
-            "edad": 38,
-            "ingreso_mensual": 25000.0,
-            "total_deuda_actual": 4000.0,
-            "historial_crediticio": 2,
-            "antiguedad_laboral": 6,
+            "edad": 35,
+            "ingreso_mensual": 20000.0,
+            "total_deuda_actual": 6000.0,
+            "historial_crediticio": 1,
+            "antiguedad_laboral": 4,
             "numero_dependientes": 1,
-            "tipo_vivienda": "Propia",
+            "tipo_vivienda": "Rentada",
             "proposito_credito": "Negocio",
             "monto_credito": 25000.0,
         },
@@ -637,15 +638,17 @@ def demo_script() -> None:
               f"viv={datos['tipo_vivienda']}, "
               f"prop={datos['proposito_credito']}, "
               f"monto=${datos['monto_credito']:,.0f}")
+        dti_pct = resultado['dti_ratio'] * 100
+        dti_cls = resultado['dti_clasificacion']
         print(f"  Score: {score}/100  |  "
-              f"DTI: {resultado['dti']['valor_porcentaje']}")
+              f"DTI: {dti_pct:.0f}% ({dti_cls})")
         print(f"  Dictamen: {color}{dictamen}{C['RESET']}  "
               f"(esperado: {esperado})  [{match_str}]")
 
-        # Reglas disparadas
-        if resultado.get("reglas_disparadas"):
+        # Reglas activadas
+        if resultado.get("reglas_activadas"):
             reglas = [
-                r["id"] for r in resultado["reglas_disparadas"]
+                r["id"] for r in resultado["reglas_activadas"]
             ]
             print(f"  Reglas: {', '.join(reglas)}")
 
@@ -703,8 +706,10 @@ def demo_script() -> None:
         print(f"  {color}{dictamen:<18}{C['RESET']} "
               f"{count:>3}  {barra}")
 
-    print(f"\n  Evaluaciones/seg: "
-          f"{engine.stats['evaluaciones_por_segundo']:.0f}")
+    total_eval = engine.stats['total_evaluaciones']
+    print(f"\n  Total evaluaciones: {total_eval}"
+          f"  |  Score promedio: "
+          f"{engine.stats['score_promedio']:.1f}")
     print()
 
 
