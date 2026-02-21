@@ -3,35 +3,56 @@
     "sistema": "MIHAC v1.0",
     "descripcion": "Pesos ponderados por variable de entrada",
     "nota": "Los pesos deben sumar 1.00 (100%). Para ajustar la importancia relativa de cada variable, modificar este archivo. Nunca cambiar pesos en código Python.",
-    "suma_total": 1.00
+    "suma_total": 1.0,
+    "version": "v2 (calibrada)",
+    "calibracion": {
+      "fecha": "2026-02-21T00:12:11.677055",
+      "metodo": "Análisis de errores FP/FN + costo asimétrico 4:1",
+      "cambios": [
+        {
+          "variable": "Ingreso_Mensual",
+          "peso_anterior": 0.3,
+          "peso_nuevo": 0.28,
+          "ajuste": -0.02,
+          "razon": "Ingreso_Mensual: FP difieren 141% de VN → reducir peso de 0.30 a 0.28"
+        },
+        {
+          "variable": "Total_Deuda_Actual",
+          "peso_anterior": 0.15,
+          "peso_nuevo": 0.13,
+          "ajuste": -0.02,
+          "razon": "Total_Deuda_Actual: FP difieren 89% de VN → reducir peso de 0.15 a 0.13"
+        }
+      ]
+    }
   },
   "pesos": {
     "Ingreso_Mensual": {
-      "peso": 0.30,
+      "peso": 0.32,
       "modulo": "solvencia",
       "descripcion": "Capacidad bruta de pago. Variable más importante del sistema.",
       "justificacion": "El ingreso es el principal predictor de capacidad de pago en microcréditos."
     },
     "Historial_Crediticio": {
-      "peso": 0.20,
+      "peso": 0.2,
       "modulo": "historial",
       "descripcion": "Comportamiento crediticio previo (0=Malo, 1=Neutro, 2=Bueno).",
       "justificacion": "El comportamiento pasado es el mejor predictor del comportamiento futuro."
     },
     "Total_Deuda_Actual": {
-      "peso": 0.15,
+      "peso": 0.13,
       "modulo": "solvencia",
       "descripcion": "Se usa para calcular DTI = Deuda / Ingreso. Penaliza si DTI > 0.40.",
       "justificacion": "La carga de deuda existente reduce directamente la capacidad de pago disponible."
     },
     "Antiguedad_Laboral": {
-      "peso": 0.10,
+      "peso": 0.1,
       "modulo": "estabilidad",
       "descripcion": "Años en el empleo actual. Mayor antigüedad = menor riesgo.",
       "justificacion": "La estabilidad laboral predice continuidad de ingresos."
     },
     "Proposito_Credito": {
-      "peso": 0.10,
+      "peso": 0.1,
       "modulo": "proposito",
       "descripcion": "Destino del crédito. Negocio/Educación suman; Vacaciones resta.",
       "justificacion": "Créditos productivos tienen menor tasa de morosidad que créditos de consumo."
@@ -58,33 +79,46 @@
   "modulos_scoring": {
     "solvencia": {
       "peso_total": 0.45,
-      "variables": ["Ingreso_Mensual", "Total_Deuda_Actual"],
+      "variables": [
+        "Ingreso_Mensual",
+        "Total_Deuda_Actual"
+      ],
       "descripcion": "Capacidad económica real de pago del solicitante."
     },
     "historial": {
-      "peso_total": 0.20,
-      "variables": ["Historial_Crediticio"],
+      "peso_total": 0.2,
+      "variables": [
+        "Historial_Crediticio"
+      ],
       "descripcion": "Comportamiento crediticio previo documentado."
     },
     "estabilidad": {
-      "peso_total": 0.20,
-      "variables": ["Antiguedad_Laboral", "Numero_Dependientes", "Tipo_Vivienda"],
+      "peso_total": 0.2,
+      "variables": [
+        "Antiguedad_Laboral",
+        "Numero_Dependientes",
+        "Tipo_Vivienda"
+      ],
       "descripcion": "Factores de estabilidad socioeconómica del solicitante."
     },
     "proposito": {
-      "peso_total": 0.10,
-      "variables": ["Proposito_Credito"],
+      "peso_total": 0.1,
+      "variables": [
+        "Proposito_Credito"
+      ],
       "descripcion": "Destino del crédito y su riesgo asociado."
     },
     "perfil": {
       "peso_total": 0.05,
-      "variables": ["Edad"],
+      "variables": [
+        "Edad"
+      ],
       "descripcion": "Perfil demográfico básico del solicitante."
     }
   },
   "variable_control": {
     "Monto_Credito": {
-      "peso": 0.00,
+      "peso": 0.0,
       "descripcion": "El monto solicitado NO aporta puntos al score, pero eleva el umbral de exigencia. A mayor monto, se requiere mayor score para aprobación.",
       "tipo": "modificador_umbral"
     }

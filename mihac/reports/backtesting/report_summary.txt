@@ -1,0 +1,80 @@
+============================================================
+REPORTE DE BACKTESTING — MIHAC v1.0
+Fecha: 2026-02-21T00:12:05.681584
+============================================================
+
+Registros evaluados: 1000
+Tiempo de evaluación: 0.72s
+Velocidad: 1393.3 reg/seg
+
+── Distribución de Dictámenes ──
+  APROBADO: 329 (32.9%)
+  RECHAZADO: 546 (54.6%)
+  REVISION_MANUAL: 125 (12.5%)
+
+── Métricas de Desempeño ──
+  accuracy: 0.4590
+  precision: 0.7416
+  recall: 0.3486
+  f1_score: 0.4742
+  specificity: 0.7167
+  auc_roc: 0.5512
+  costo_asimetrico: 0.7960
+
+── Matriz de Confusión ──
+  VP=244  FP=85
+  FN=456  VN=215
+
+── Errores ──
+  Falsos Positivos: 85
+  Falsos Negativos: 456
+
+  Perfil del FP típico:
+    Edad promedio:    35.8
+    Ingreso promedio: $33,260
+    DTI promedio:     0.3059
+    Score promedio:   94.5
+    Propósito común:  Consumo
+
+  Perfil del FN típico:
+    Edad promedio:    36.4
+    Ingreso promedio: $18,410
+    DTI promedio:     0.2992
+    Score promedio:   42.2
+    Rechazados:       375
+    Revisión manual:  81
+
+============================================================
+INTERPRETACIÓN DE RESULTADOS — MOTOR MIHAC
+============================================================
+
+Precision (0.74): De cada 100 créditos que el motor aprobó, 74 resultaron en buen pago y 26 en morosidad.
+
+Recall (0.35): El motor identificó correctamente al 34% de los buenos pagadores del dataset.
+
+Specificity (0.72): El motor detectó correctamente al 71% de los malos pagadores.
+
+F1-Score (0.47): Balance armónico entre Precision y Recall.
+
+Costo Asimétrico (0.80): Ponderado 4:1 (FP vs FN). FP=85 (pérdida directa), FN=456 (oportunidad perdida).
+
+AUC-ROC (0.55): Capacidad discriminatoria general del motor.
+
+────────────────────────────────────────────────────────────
+RECOMENDACIONES
+────────────────────────────────────────────────────────────
+⚠ Costo asimétrico ALTO (>0.30): Se recomienda aumentar el umbral de aprobación para reducir FP.
+⚠ Recall BAJO (<0.65): Las reglas de penalización podrían ser demasiado agresivas. Revisar R004, R008, R009.
+⚠ AUC-ROC BAJO (<0.65): La capacidad discriminatoria del motor es limitada. Revisar la estructura de sub-scores.
+
+────────────────────────────────────────────────────────────
+OBJETIVOS PARA TESIS
+────────────────────────────────────────────────────────────
+  ✗ Accuracy > 0.70
+  ✗ Precision > 0.75
+  ✗ Recall > 0.65
+  ✗ F1-Score > 0.70
+  ✗ AUC-ROC > 0.70
+  ✗ Costo Asim. < 0.25
+
+  Resultado: 0/6 objetivos cumplidos.
