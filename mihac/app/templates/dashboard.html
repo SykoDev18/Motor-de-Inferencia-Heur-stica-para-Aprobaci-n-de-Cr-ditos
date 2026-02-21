@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Analítico{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- ═══ Encabezado ═══ -->
+    <div class="col-12 mb-4">
+        <h2 class="text-mihac-navy fw-bold">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard Analítico
+        </h2>
+        <p class="text-muted mb-0">Resumen estadístico de las evaluaciones del sistema MIHAC.</p>
+    </div>
+</div>
+
+{% if vacio %}
+<!-- ═══ Sin datos ═══ -->
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-graph-up" style="font-size: 3rem; color: #64748B;"></i>
+                <h4 class="mt-3 text-muted">No hay datos aún</h4>
+                <p class="text-muted">Realiza al menos una evaluación para ver las estadísticas.</p>
+                <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Nueva Evaluación
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+<!-- ═══ Fila 1: KPIs ═══ -->
+<div class="row g-3 mb-4">
+    <!-- Total evaluaciones -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-clipboard-data fs-3" style="color: #1B4F8A;"></i>
+                <h3 class="fw-bold mt-2 mb-0 text-mihac-navy">{{ kpis.total }}</h3>
+                <small class="text-muted">Evaluaciones</small>
+            </div>
+        </div>
+    </div>
+    <!-- Tasa de aprobación -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-check-circle fs-3" style="color: #10B981;"></i>
+                <h3 class="fw-bold mt-2 mb-0" style="color: #10B981;">{{ kpis.tasa_aprobacion }}%</h3>
+                <small class="text-muted">Tasa Aprobación</small>
+            </div>
+        </div>
+    </div>
+    <!-- Score promedio -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-trophy fs-3" style="color: #F59E0B;"></i>
+                <h3 class="fw-bold mt-2 mb-0 text-mihac-navy">{{ kpis.score_promedio }}</h3>
+                <small class="text-muted">Score Promedio</small>
+            </div>
+        </div>
+    </div>
+    <!-- DTI promedio -->
+    <div class="col-6 col-lg-3">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-percent fs-3" style="color: #0E7C7B;"></i>
+                <h3 class="fw-bold mt-2 mb-0 text-mihac-teal">{{ kpis.dti_promedio }}%</h3>
+                <small class="text-muted">DTI Promedio</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Fila 2: KPIs secundarios ═══ -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4" style="border-color: #10B981 !important;">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted text-uppercase fw-bold">Aprobados</small>
+                    <h4 class="fw-bold mb-0" style="color: #10B981;">{{ kpis.aprobados }}</h4>
+                </div>
+                <i class="bi bi-hand-thumbs-up fs-2" style="color: #10B981;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4" style="border-color: #F59E0B !important;">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted text-uppercase fw-bold">Revisión Manual</small>
+                    <h4 class="fw-bold mb-0" style="color: #F59E0B;">{{ kpis.revision }}</h4>
+                </div>
+                <i class="bi bi-exclamation-triangle fs-2" style="color: #F59E0B;"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-start border-4" style="border-color: #EF4444 !important;">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <small class="text-muted text-uppercase fw-bold">Rechazados</small>
+                    <h4 class="fw-bold mb-0" style="color: #EF4444;">{{ kpis.rechazados }}</h4>
+                </div>
+                <i class="bi bi-hand-thumbs-down fs-2" style="color: #EF4444;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Fila 3: Gráficas principales ═══ -->
+<div class="row g-4 mb-4">
+    <!-- Pie: Dictámenes -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-pie-chart me-2"></i>Distribución de Dictámenes
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="chartDictamen" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Bar: Histograma de Scores -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-bar-chart me-2"></i>Distribución de Scores
+            </div>
+            <div class="card-body">
+                <canvas id="chartScores" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Doughnut: DTI -->
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-bullseye me-2"></i>Distribución de DTI
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="chartDTI" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Fila 4: Propósitos + Últimas evaluaciones ═══ -->
+<div class="row g-4 mb-4">
+    <!-- Bar: Propósitos -->
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header bg-mihac-navy text-white">
+                <i class="bi bi-tags me-2"></i>Evaluaciones por Propósito
+            </div>
+            <div class="card-body">
+                <canvas id="chartProposito" style="max-height: 280px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Tabla: Últimas evaluaciones -->
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header bg-mihac-navy text-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-clock me-2"></i>Últimas Evaluaciones</span>
+                <a href="{{ url_for('main.historial') }}" class="btn btn-sm btn-outline-light">
+                    Ver todo <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-mihac table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha</th>
+                                <th>Score</th>
+                                <th>DTI</th>
+                                <th class="text-center">Dictamen</th>
+                                <th class="text-center">Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ev in ultimas %}
+                            <tr>
+                                <td class="fw-bold">{{ ev.id }}</td>
+                                <td class="small">{{ ev.timestamp.strftime('%d/%m/%y %H:%M') }}</td>
+                                <td>
+                                    <span class="fw-bold" style="color: {{ ev.dictamen | color_dictamen }};">
+                                        {{ ev.score_final }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge {{ 'bg-success' if ev.dti_ratio < 0.25 else ('bg-warning text-dark' if ev.dti_ratio < 0.40 else 'bg-danger') }}">
+                                        {{ "%.1f"|format(ev.dti_ratio * 100) }}%
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge {{ ev.dictamen | clase_badge }}">
+                                        {{ ev.dictamen | replace("_", " ") }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('main.resultado', eval_id=ev.id) }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Fila 5: Monto total ═══ -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-mihac-navy text-white">
+            <div class="card-body d-flex justify-content-between align-items-center py-3">
+                <div>
+                    <small class="text-uppercase" style="opacity: 0.7;">Monto Total Evaluado</small>
+                    <h3 class="fw-bold mb-0">${{ "{:,.2f}".format(kpis.monto_total) }}</h3>
+                </div>
+                <i class="bi bi-cash-coin" style="font-size: 2.5rem; opacity: 0.5;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Datos para Chart.js (hidden) -->
+<script id="dataDictamen" type="application/json">{{ chart_dictamen | safe }}</script>
+<script id="dataScores" type="application/json">{{ chart_scores | safe }}</script>
+<script id="dataProposito" type="application/json">{{ chart_proposito | safe }}</script>
+<script id="dataDTI" type="application/json">{{ chart_dti | safe }}</script>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{% if not vacio %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endif %}
+{% endblock %}

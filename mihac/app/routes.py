@@ -213,10 +213,131 @@ def historial():
 
 
 # ════════════════════════════════════════════════════════════
-# RUTA: DASHBOARD (stub — Entregable 4)
+# RUTA: DASHBOARD ANALÍTICO
 # ════════════════════════════════════════════════════════════
 
 @main.route("/dashboard")
 def dashboard():
-    """Dashboard analítico — se implementará en Entregable 4."""
-    return render_template("index.html", form=EvaluacionForm())
+    """Dashboard con KPIs, gráficas y estadísticas agregadas."""
+    from sqlalchemy import func
+    import json
+
+    # ── KPIs principales ────────────────────────────────────
+    total = Evaluacion.query.count()
+
+    if total == 0:
+        return render_template("dashboard.html", vacio=True, total=0)
+
+    aprobados = Evaluacion.query.filter_by(dictamen="APROBADO").count()
+    rechazados = Evaluacion.query.filter_by(dictamen="RECHAZADO").count()
+    revision = Evaluacion.query.filter_by(dictamen="REVISION_MANUAL").count()
+
+    score_prom = db.session.query(func.avg(Evaluacion.score_final)).scalar() or 0
+    dti_prom = db.session.query(func.avg(Evaluacion.dti_ratio)).scalar() or 0
+    monto_total = db.session.query(func.sum(Evaluacion.monto_credito)).scalar() or 0
+
+    tasa_aprobacion = (aprobados / total * 100) if total > 0 else 0
+
+    kpis = {
+        "total": total,
+        "aprobados": aprobados,
+        "rechazados": rechazados,
+        "revision": revision,
+        "score_promedio": round(score_prom, 1),
+        "dti_promedio": round(dti_prom * 100, 1),
+        "monto_total": round(monto_total, 2),
+        "tasa_aprobacion": round(tasa_aprobacion, 1),
+    }
+
+    # ── Distribución de dictámenes (pie chart) ──────────────
+    chart_dictamen = {
+        "labels": ["Aprobado", "Revisión Manual", "Rechazado"],
+        "data": [aprobados, revision, rechazados],
+        "colors": ["#10B981", "#F59E0B", "#EF4444"],
+    }
+
+    # ── Distribución de scores (histograma) ─────────────────
+    rangos = [
+        ("0–19", 0, 19),
+        ("20–39", 20, 39),
+        ("40–59", 40, 59),
+        ("60–79", 60, 79),
+        ("80–100", 80, 100),
+    ]
+    hist_data = []
+    hist_labels = []
+    hist_colors = []
+    color_map = {0: "#EF4444", 1: "#EF4444", 2: "#F59E0B", 3: "#F59E0B", 4: "#10B981"}
+    for i, (label, lo, hi) in enumerate(rangos):
+        count = Evaluacion.query.filter(
+            Evaluacion.score_final >= lo,
+            Evaluacion.score_final <= hi,
+        ).count()
+        hist_labels.append(label)
+        hist_data.append(count)
+        hist_colors.append(color_map[i])
+
+    chart_scores = {
+        "labels": hist_labels,
+        "data": hist_data,
+        "colors": hist_colors,
+    }
+
+    # ── Distribución por propósito (bar chart) ──────────────
+    propositos_q = (
+        db.session.query(
+            Evaluacion.proposito_credito,
+            func.count(Evaluacion.id),
+        )
+        .group_by(Evaluacion.proposito_credito)
+        .order_by(func.count(Evaluacion.id).desc())
+        .all()
+    )
+    chart_proposito = {
+        "labels": [p[0] for p in propositos_q],
+        "data": [p[1] for p in propositos_q],
+    }
+
+    # ── Distribución de DTI (categorías) ────────────────────
+    dti_cats = [
+        ("Bajo (<25%)", 0, 0.25),
+        ("Moderado (25–40%)", 0.25, 0.40),
+        ("Alto (40–60%)", 0.40, 0.60),
+        ("Crítico (>60%)", 0.60, 10.0),
+    ]
+    dti_labels = []
+    dti_data = []
+    dti_colors = ["#10B981", "#F59E0B", "#FB923C", "#EF4444"]
+    for label, lo, hi in dti_cats:
+        count = Evaluacion.query.filter(
+            Evaluacion.dti_ratio >= lo,
+            Evaluacion.dti_ratio < hi,
+        ).count()
+        dti_labels.append(label)
+        dti_data.append(count)
+
+    chart_dti = {
+        "labels": dti_labels,
+        "data": dti_data,
+        "colors": dti_colors,
+    }
+
+    # ── Últimas 5 evaluaciones ──────────────────────────────
+    ultimas = (
+        Evaluacion.query
+        .order_by(Evaluacion.timestamp.desc())
+        .limit(5)
+        .all()
+    )
+
+    return render_template(
+        "dashboard.html",
+        vacio=False,
+        kpis=kpis,
+        total=total,
+        chart_dictamen=json.dumps(chart_dictamen),
+        chart_scores=json.dumps(chart_scores),
+        chart_proposito=json.dumps(chart_proposito),
+        chart_dti=json.dumps(chart_dti),
+        ultimas=ultimas,
+    )
