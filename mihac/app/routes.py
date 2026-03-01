@@ -14,12 +14,14 @@ from flask import (
     url_for,
     flash,
     request,
+    send_file,
 )
 
 from app import db
 from app.forms import EvaluacionForm
 from app.models import Evaluacion
 from core.engine import InferenceEngine
+from reports.pdf_report import PDFReportGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +29,9 @@ main = Blueprint("main", __name__)
 
 # Motor de inferencia (instancia única por proceso)
 _engine = InferenceEngine()
+
+# Generador de PDFs (instancia única)
+_pdf_gen = PDFReportGenerator()
 
 
 # ════════════════════════════════════════════════════════════
@@ -341,3 +346,63 @@ def dashboard():
         chart_dti=json.dumps(chart_dti),
         ultimas=ultimas,
     )
+
+
+# ════════════════════════════════════════════════════════════
+# RUTA: DESCARGAR PDF — REPORTE COMPLETO
+# ════════════════════════════════════════════════════════════
+
+@main.route("/resultado/<int:eval_id>/pdf")
+def descargar_pdf(eval_id):
+    """Genera y descarga el PDF completo (auditoría)."""
+    evaluacion = Evaluacion.query.get_or_404(eval_id)
+    datos = evaluacion.to_dict()
+    output_path = (
+        f"reports/exports/evaluacion_{eval_id}_completo.pdf"
+    )
+    try:
+        pdf_path = _pdf_gen.generate_complete_report(
+            datos, output_path
+        )
+        return send_file(
+            pdf_path,
+            as_attachment=True,
+            download_name=f"MIHAC_Evaluacion_{eval_id}.pdf",
+        )
+    except Exception as e:
+        logger.error("Error generando PDF completo: %s", e)
+        flash(
+            "Error al generar el reporte PDF. Intenta de nuevo.",
+            "danger",
+        )
+        return redirect(url_for("main.resultado", eval_id=eval_id))
+
+
+# ════════════════════════════════════════════════════════════
+# RUTA: DESCARGAR PDF — REPORTE CLIENTE
+# ════════════════════════════════════════════════════════════
+
+@main.route("/resultado/<int:eval_id>/pdf-cliente")
+def descargar_pdf_cliente(eval_id):
+    """Genera y descarga el PDF simplificado (cliente)."""
+    evaluacion = Evaluacion.query.get_or_404(eval_id)
+    datos = evaluacion.to_dict()
+    output_path = (
+        f"reports/exports/evaluacion_{eval_id}_cliente.pdf"
+    )
+    try:
+        pdf_path = _pdf_gen.generate_client_report(
+            datos, output_path
+        )
+        return send_file(
+            pdf_path,
+            as_attachment=True,
+            download_name=f"Resultado_Solicitud_{eval_id}.pdf",
+        )
+    except Exception as e:
+        logger.error("Error generando PDF cliente: %s", e)
+        flash(
+            "Error al generar el reporte PDF. Intenta de nuevo.",
+            "danger",
+        )
+        return redirect(url_for("main.resultado", eval_id=eval_id))

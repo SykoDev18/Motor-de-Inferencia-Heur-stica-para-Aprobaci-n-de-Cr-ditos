@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       MIHAC v1.0 — Reporte Completo (Auditoría / Regulador)
+       CSS optimizado para WeasyPrint / @page
+       ═══════════════════════════════════════════════════════ */
+
+    @page {
+      size: A4;
+      margin: 2cm 2cm 2.5cm 2cm;
+    }
+
+    body {
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      font-size: 11pt;
+      color: #0D1B2A;
+      line-height: 1.5;
+    }
+
+    h1 {
+      font-size: 20pt;
+      color: #0D1B2A;
+      border-bottom: 3px solid #0E7C7B;
+      padding-bottom: 6px;
+      margin-top: 0;
+    }
+    h2 {
+      font-size: 16pt;
+      color: #1B4F8A;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    h3 {
+      font-size: 13pt;
+      color: #0E7C7B;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Tablas ─────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 8px 12px;
+      border: 1px solid #E2E8F0;
+      text-align: left;
+      font-size: 10pt;
+    }
+    th {
+      background-color: #0D1B2A;
+      color: white;
+      font-weight: bold;
+    }
+    tr:nth-child(even) td {
+      background-color: #F8FAFC;
+    }
+
+    /* ── Portada ────────────────────────────────────────── */
+    .portada {
+      page-break-after: always;
+      text-align: center;
+      padding-top: 6cm;
+    }
+    .portada h1 {
+      font-size: 26pt;
+      border-bottom: none;
+      color: #0D1B2A;
+      margin-bottom: 10px;
+    }
+    .portada .subtitulo {
+      font-size: 14pt;
+      color: #64748B;
+      margin-bottom: 40px;
+    }
+
+    /* ── Dictamen box ──────────────────────────────────── */
+    .dictamen-box {
+      padding: 18px 30px;
+      border-radius: 8px;
+      font-size: 22pt;
+      font-weight: bold;
+      margin: 30px auto;
+      display: inline-block;
+      min-width: 300px;
+    }
+    .dictamen-aprobado   { background-color: #D1FAE5; color: #065F46; border: 2px solid #10B981; }
+    .dictamen-rechazado  { background-color: #FEE2E2; color: #991B1B; border: 2px solid #EF4444; }
+    .dictamen-revision   { background-color: #FEF3C7; color: #92400E; border: 2px solid #F59E0B; }
+
+    /* ── Secciones ─────────────────────────────────────── */
+    .seccion {
+      page-break-inside: avoid;
+      margin-bottom: 25px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* ── Barras de progreso SVG ────────────────────────── */
+    .progress-container {
+      margin: 6px 0;
+    }
+
+    /* ── Badges ────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 9pt;
+      font-weight: bold;
+    }
+    .badge-verde  { background-color: #D1FAE5; color: #065F46; }
+    .badge-rojo   { background-color: #FEE2E2; color: #991B1B; }
+    .badge-ambar  { background-color: #FEF3C7; color: #92400E; }
+
+    /* ── Reglas ─────────────────────────────────────────── */
+    .regla-positiva { color: #065F46; }
+    .regla-negativa { color: #991B1B; }
+    .regla-item {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-left: 4px solid #E2E8F0;
+      background: #F8FAFC;
+    }
+    .regla-item.positiva { border-left-color: #10B981; }
+    .regla-item.negativa { border-left-color: #EF4444; }
+
+    /* ── Utilidades ────────────────────────────────────── */
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+    .text-muted { color: #64748B; }
+    .fw-bold { font-weight: bold; }
+    .mb-0 { margin-bottom: 0; }
+
+    .info-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .info-grid .item {
+      width: 50%;
+      padding: 6px 0;
+    }
+    .info-grid .item .label {
+      font-size: 9pt;
+      color: #64748B;
+      text-transform: uppercase;
+    }
+    .info-grid .item .value {
+      font-size: 11pt;
+      font-weight: bold;
+    }
+
+    .explicacion-text {
+      white-space: pre-wrap;
+      font-size: 10pt;
+      line-height: 1.6;
+      padding: 15px;
+      background: #F8FAFC;
+      border-radius: 6px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .footer-portada {
+      position: absolute;
+      bottom: 3cm;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9pt;
+      color: #64748B;
+    }
+
+    .summary-box {
+      background: #F0F4F8;
+      border: 1px solid #E2E8F0;
+      border-radius: 6px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 1: PORTADA
+       ═══════════════════════════════════════════════════════ -->
+  <div class="portada">
+    <h1>REPORTE DE EVALUACIÓN CREDITICIA</h1>
+    <p class="subtitulo">Sistema MIHAC v1.0 — Motor de Inferencia Heurística para Aprobación de Créditos</p>
+
+    <p style="font-size: 12pt; color: #64748B; margin-top: 30px;">
+      ID de Evaluación: <strong style="color: #0D1B2A;">{{ ev.id }}</strong>
+    </p>
+    <p style="font-size: 12pt; color: #64748B;">
+      Fecha de emisión: <strong style="color: #0D1B2A;">{{ timestamp }}</strong>
+    </p>
+
+    {% if dictamen_clase == 'aprobado' %}
+    <div class="dictamen-box dictamen-aprobado">APROBADO</div>
+    {% elif dictamen_clase == 'rechazado' %}
+    <div class="dictamen-box dictamen-rechazado">RECHAZADO</div>
+    {% else %}
+    <div class="dictamen-box dictamen-revision">REVISIÓN MANUAL</div>
+    {% endif %}
+
+    <div class="footer-portada">
+      Sistema MIHAC v1.0 | Documento confidencial | Uso exclusivo institucional
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 2: RESUMEN EJECUTIVO
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Resumen Ejecutivo</h1>
+
+  <div class="summary-box">
+    <table style="border: none; margin: 0;">
+      <tr style="border: none;">
+        <td style="border: none; width: 50%; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">DICTAMEN</span><br>
+          <strong style="font-size: 14pt;">{{ ev.dictamen | replace("_", " ") }}</strong>
+        </td>
+        <td style="border: none; width: 50%; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">SCORE FINAL</span><br>
+          <strong style="font-size: 14pt;">{{ ev.score_final }} / 100</strong>
+        </td>
+      </tr>
+      <tr style="border: none;">
+        <td style="border: none; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">UMBRAL APLICADO</span><br>
+          <strong>{{ ev.umbral_aplicado }} pts</strong>
+        </td>
+        <td style="border: none; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">DTI (DEUDA/INGRESO)</span><br>
+          <strong>{{ "%.1f" | format(ev.dti_ratio * 100) }}% ({{ ev.dti_clasificacion }})</strong>
+        </td>
+      </tr>
+      <tr style="border: none;">
+        <td style="border: none; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">MONTO SOLICITADO</span><br>
+          <strong>{{ formato_moneda(ev.monto_credito) }}</strong>
+        </td>
+        <td style="border: none; padding: 6px 12px;">
+          <span class="text-muted" style="font-size: 9pt;">PROPÓSITO</span><br>
+          <strong>{{ ev.proposito_credito }}</strong>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <h2>Recomendación</h2>
+  <p>{{ recomendacion }}</p>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 3: DATOS DEL SOLICITANTE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Datos del Solicitante</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 45%;">Variable</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Edad</td><td>{{ ev.edad }} años</td></tr>
+      <tr><td>Ingreso mensual</td><td>{{ formato_moneda(ev.ingreso_mensual) }}</td></tr>
+      <tr><td>Deuda total actual</td><td>{{ formato_moneda(ev.total_deuda_actual) }}</td></tr>
+      <tr><td>Historial crediticio</td><td>{{ texto_historial }}</td></tr>
+      <tr><td>Antigüedad laboral</td><td>{{ ev.antiguedad_laboral }} años</td></tr>
+      <tr><td>Número de dependientes</td><td>{{ ev.numero_dependientes }}</td></tr>
+      <tr><td>Tipo de vivienda</td><td>{{ ev.tipo_vivienda }}</td></tr>
+      <tr><td>Propósito del crédito</td><td>{{ ev.proposito_credito }}</td></tr>
+      <tr><td>Monto solicitado</td><td>{{ formato_moneda(ev.monto_credito) }}</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 4: ANÁLISIS DE SOLVENCIA (DTI)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Análisis de Solvencia (DTI)</h1>
+
+  <h2>Comparativa de Ingreso vs. Deuda</h2>
+
+  <!-- Barra visual de ingreso/deuda -->
+  <div style="margin: 20px 0;">
+    <p style="margin-bottom: 5px;"><strong>Ingreso mensual:</strong> {{ formato_moneda(ev.ingreso_mensual) }}</p>
+    <svg width="100%" height="30" viewBox="0 0 500 30">
+      <rect x="0" y="0" width="500" height="30" rx="4" fill="#D1FAE5"/>
+      <text x="250" y="20" text-anchor="middle" font-size="11" fill="#065F46" font-weight="bold">
+        {{ formato_moneda(ev.ingreso_mensual) }}
+      </text>
+    </svg>
+
+    <p style="margin-top: 12px; margin-bottom: 5px;"><strong>Deuda actual:</strong> {{ formato_moneda(ev.total_deuda_actual) }}</p>
+    {% set deuda_pct = (ev.total_deuda_actual / ev.ingreso_mensual * 500) | int if ev.ingreso_mensual > 0 else 0 %}
+    {% set deuda_width = [deuda_pct, 500] | min %}
+    <svg width="100%" height="30" viewBox="0 0 500 30">
+      <rect x="0" y="0" width="500" height="30" rx="4" fill="#F0F4F8"/>
+      <rect x="0" y="0" width="{{ deuda_width }}" height="30" rx="4" fill="#EF4444"/>
+      {% if deuda_width > 80 %}
+      <text x="{{ deuda_width // 2 }}" y="20" text-anchor="middle" font-size="11" fill="white" font-weight="bold">
+        {{ formato_moneda(ev.total_deuda_actual) }}
+      </text>
+      {% endif %}
+    </svg>
+
+    <p style="margin-top: 12px; margin-bottom: 5px;"><strong>Cuota estimada nuevo crédito:</strong> {{ formato_moneda(cuota_estimada) }}</p>
+    {% set cuota_pct = (cuota_estimada / ev.ingreso_mensual * 500) | int if ev.ingreso_mensual > 0 else 0 %}
+    {% set cuota_width = [cuota_pct, 500] | min %}
+    <svg width="100%" height="30" viewBox="0 0 500 30">
+      <rect x="0" y="0" width="500" height="30" rx="4" fill="#F0F4F8"/>
+      <rect x="0" y="0" width="{{ cuota_width }}" height="30" rx="4" fill="#F59E0B"/>
+      {% if cuota_width > 80 %}
+      <text x="{{ cuota_width // 2 }}" y="20" text-anchor="middle" font-size="11" fill="#92400E" font-weight="bold">
+        {{ formato_moneda(cuota_estimada) }}
+      </text>
+      {% endif %}
+    </svg>
+  </div>
+
+  <h2>Ratios de Endeudamiento</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Métrica</th>
+        <th>Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>DTI actual</td>
+        <td><strong>{{ "%.1f" | format(ev.dti_ratio * 100) }}%</strong></td>
+      </tr>
+      <tr>
+        <td>DTI proyectado (con nuevo crédito)</td>
+        <td><strong>{{ "%.1f" | format(dti_proyectado * 100) }}%</strong></td>
+      </tr>
+      <tr>
+        <td>Clasificación del DTI</td>
+        <td>
+          {% if ev.dti_clasificacion == 'BAJO' %}
+            <span class="badge badge-verde">{{ ev.dti_clasificacion }}</span>
+          {% elif ev.dti_clasificacion == 'CRITICO' %}
+            <span class="badge badge-rojo">{{ ev.dti_clasificacion }}</span>
+          {% else %}
+            <span class="badge badge-ambar">{{ ev.dti_clasificacion }}</span>
+          {% endif %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Interpretación</h2>
+  <p>{{ dti_interpretacion }}</p>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 5: DESGLOSE DEL SCORE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Desglose del Score</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Módulo</th>
+        <th class="text-right">Puntos Obtenidos</th>
+        <th class="text-right">Puntos Máximos</th>
+        <th class="text-right">Porcentaje</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mod in modulos %}
+      <tr>
+        <td>{{ mod.nombre }}</td>
+        <td class="text-right fw-bold">{{ mod.valor }}</td>
+        <td class="text-right">{{ mod.max }}</td>
+        <td class="text-right">{{ mod.pct }}%</td>
+      </tr>
+      {% endfor %}
+      <tr style="background-color: #0D1B2A; color: white;">
+        <td><strong>TOTAL</strong></td>
+        <td class="text-right"><strong>{{ ev.score_final }}</strong></td>
+        <td class="text-right"><strong>100</strong></td>
+        <td class="text-right"><strong>{{ ev.score_final }}%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Barras de Progreso</h2>
+  {% for mod in modulos %}
+  <div class="progress-container">
+    <p style="margin-bottom: 3px;">
+      <strong>{{ mod.nombre }}</strong>
+      <span class="text-muted">({{ mod.valor }}/{{ mod.max }})</span>
+    </p>
+    {{ mod.bar_svg }}
+  </div>
+  {% endfor %}
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 6: REGLAS ACTIVADAS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Reglas Heurísticas Activadas</h1>
+
+  <p class="text-muted">
+    Total de reglas activadas: <strong>{{ reglas | length }}</strong>
+    de 15 reglas en la base de conocimiento.
+  </p>
+
+  {% if reglas_positivas %}
+  <h2>Factores Positivos</h2>
+  {% for r in reglas_positivas %}
+  <div class="regla-item positiva">
+    <strong class="regla-positiva">[{{ r.id }}] (+{{ r.impacto }} pts)</strong>
+    {{ r.descripcion }}<br>
+    <small class="text-muted">
+      Tipo: {{ r.tipo | capitalize }}
+      {% if r.condicion_texto %} | Condición: {{ r.condicion_texto }}{% endif %}
+      | Estado: ✓ Activada
+    </small>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p class="text-muted">No se activaron reglas con impacto positivo.</p>
+  {% endif %}
+
+  {% if reglas_negativas %}
+  <h2>Factores Negativos</h2>
+  {% for r in reglas_negativas %}
+  <div class="regla-item negativa">
+    <strong class="regla-negativa">[{{ r.id }}] ({{ r.impacto }} pts)</strong>
+    {{ r.descripcion }}<br>
+    <small class="text-muted">
+      Tipo: {{ r.tipo | capitalize }}
+      {% if r.condicion_texto %} | Condición: {{ r.condicion_texto }}{% endif %}
+      | Estado: ✓ Activada
+    </small>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p class="text-muted">No se activaron reglas con impacto negativo.</p>
+  {% endif %}
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 7: EXPLICACIÓN COMPLETA
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Explicación Completa del Motor</h1>
+
+  <p class="text-muted">
+    Texto generado automáticamente por el módulo Explainer de MIHAC.
+  </p>
+
+  <div class="explicacion-text">{{ ev.reporte_explicacion }}</div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       PÁGINA 8: CONCLUSIÓN Y RECOMENDACIONES
+       ═══════════════════════════════════════════════════════ -->
+  <div class="page-break"></div>
+  <h1>Conclusión y Recomendaciones</h1>
+
+  <div class="summary-box">
+    {{ conclusion }}
+  </div>
+
+  {% if dictamen_clase == 'aprobado' %}
+  <h2>Condiciones de Aprobación</h2>
+  <ul>
+    <li>Monto aprobado: {{ formato_moneda(ev.monto_credito) }}</li>
+    <li>Score obtenido: {{ ev.score_final }}/100 (umbral: {{ ev.umbral_aplicado }})</li>
+    <li>DTI: {{ "%.1f" | format(ev.dti_ratio * 100) }}% — {{ ev.dti_clasificacion }}</li>
+    <li>Principales fortalezas: {{ top_positivos }}</li>
+  </ul>
+
+  {% elif dictamen_clase == 'rechazado' %}
+  <h2>Factores Determinantes del Rechazo</h2>
+  <ul>
+    {% for r in reglas_negativas[:3] %}
+    <li>{{ r.descripcion }} ({{ r.impacto }} pts)</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Sugerencias para el Solicitante</h2>
+  <ul>
+    {% for s in sugerencias %}
+    <li>{{ s }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>¿Cuándo volver a solicitar?</h2>
+  <p>Se recomienda reevaluar la solicitud en <strong>{{ meses_recomendados }} meses</strong>,
+     una vez que se hayan atendido los factores identificados.</p>
+
+  {% else %}
+  <h2>Elementos que Requieren Revisión Manual</h2>
+  <ul>
+    {% for f in factores_manuales %}
+    <li>{{ f }}</li>
+    {% endfor %}
+  </ul>
+
+  <p>Un analista de crédito debe revisar estos factores antes de emitir un dictamen final.
+     El sistema no tiene certeza suficiente para una decisión automatizada.</p>
+  {% endif %}
+
+  <div style="margin-top: 40px; padding-top: 15px; border-top: 2px solid #0D1B2A;">
+    <p class="text-muted text-center" style="font-size: 9pt;">
+      Reporte generado el {{ timestamp }} por el Sistema MIHAC v1.0<br>
+      Motor de Inferencia Heurística para Aprobación de Créditos<br>
+      Documento confidencial — Uso exclusivo institucional
+    </p>
+  </div>
+
+</body>
+</html>

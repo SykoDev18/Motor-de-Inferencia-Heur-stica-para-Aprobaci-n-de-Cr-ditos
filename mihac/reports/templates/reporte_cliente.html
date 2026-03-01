@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       MIHAC v1.0 — Reporte Cliente (Simplificado)
+       Máximo 2 páginas, lenguaje claro y respetuoso
+       ═══════════════════════════════════════════════════════ */
+
+    @page {
+      size: A4;
+      margin: 2cm 2.5cm;
+    }
+
+    body {
+      font-family: 'Helvetica', 'Arial', sans-serif;
+      font-size: 11pt;
+      color: #1E293B;
+      line-height: 1.6;
+    }
+
+    /* ── Header ────────────────────────────────────────── */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #0E7C7B;
+    }
+    .header h1 {
+      font-size: 20pt;
+      color: #0D1B2A;
+      margin-bottom: 5px;
+    }
+    .header p {
+      font-size: 10pt;
+      color: #64748B;
+      margin: 0;
+    }
+
+    /* ── Dictamen ──────────────────────────────────────── */
+    .dictamen-box {
+      text-align: center;
+      padding: 20px;
+      border-radius: 10px;
+      margin: 25px 0;
+    }
+    .dictamen-aprobado {
+      background-color: #D1FAE5;
+      border: 2px solid #10B981;
+    }
+    .dictamen-aprobado .icono { font-size: 36pt; }
+    .dictamen-aprobado .titulo { color: #065F46; font-size: 18pt; font-weight: bold; }
+    .dictamen-aprobado .subtitulo { color: #047857; font-size: 11pt; }
+
+    .dictamen-rechazado {
+      background-color: #FEE2E2;
+      border: 2px solid #EF4444;
+    }
+    .dictamen-rechazado .icono { font-size: 36pt; }
+    .dictamen-rechazado .titulo { color: #991B1B; font-size: 18pt; font-weight: bold; }
+    .dictamen-rechazado .subtitulo { color: #B91C1C; font-size: 11pt; }
+
+    .dictamen-revision {
+      background-color: #FEF3C7;
+      border: 2px solid #F59E0B;
+    }
+    .dictamen-revision .icono { font-size: 36pt; }
+    .dictamen-revision .titulo { color: #92400E; font-size: 18pt; font-weight: bold; }
+    .dictamen-revision .subtitulo { color: #B45309; font-size: 11pt; }
+
+    /* ── Secciones ─────────────────────────────────────── */
+    h2 {
+      font-size: 14pt;
+      color: #1B4F8A;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .solicitud-info {
+      background: #F0F4F8;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 15px 0;
+    }
+    .solicitud-info table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .solicitud-info td {
+      padding: 6px 0;
+      border: none;
+      font-size: 11pt;
+    }
+    .solicitud-info .label {
+      color: #64748B;
+      width: 50%;
+    }
+    .solicitud-info .value {
+      font-weight: bold;
+      text-align: right;
+    }
+
+    /* ── Puntos positivos/negativos ────────────────────── */
+    .punto-item {
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;
+      font-size: 11pt;
+    }
+    .punto-item .icono-punto {
+      position: absolute;
+      left: 0;
+      font-size: 14pt;
+    }
+    .punto-positivo .icono-punto { color: #10B981; }
+    .punto-negativo .icono-punto { color: #EF4444; }
+    .punto-atencion .icono-punto { color: #F59E0B; }
+
+    /* ── Score visual ──────────────────────────────────── */
+    .score-visual {
+      text-align: center;
+      margin: 15px 0;
+    }
+    .score-numero {
+      font-size: 36pt;
+      font-weight: bold;
+    }
+    .score-label {
+      font-size: 10pt;
+      color: #64748B;
+      text-transform: uppercase;
+    }
+
+    /* ── Mejora ────────────────────────────────────────── */
+    .mejora-item {
+      padding: 10px 15px;
+      margin: 8px 0;
+      background: #F8FAFC;
+      border-left: 4px solid #1B4F8A;
+      border-radius: 0 6px 6px 0;
+      font-size: 11pt;
+    }
+
+    .page-break { page-break-before: always; }
+    .text-muted { color: #94A3B8; }
+    .text-center { text-align: center; }
+
+    .footer-doc {
+      margin-top: 30px;
+      padding-top: 15px;
+      border-top: 1px solid #E2E8F0;
+      text-align: center;
+      font-size: 9pt;
+      color: #94A3B8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ Header ═══ -->
+  <div class="header">
+    <h1>Resultado de Su Solicitud</h1>
+    <p>Sistema de Evaluación Crediticia MIHAC | Referencia: #{{ ev.id }} | {{ timestamp }}</p>
+  </div>
+
+  <!-- ═══ Dictamen destacado ═══ -->
+  {% if dictamen_clase == 'aprobado' %}
+  <div class="dictamen-box dictamen-aprobado">
+    <div class="icono">✓</div>
+    <div class="titulo">SOLICITUD APROBADA</div>
+    <div class="subtitulo">Su solicitud de crédito ha sido aprobada.</div>
+  </div>
+  {% elif dictamen_clase == 'rechazado' %}
+  <div class="dictamen-box dictamen-rechazado">
+    <div class="icono">✗</div>
+    <div class="titulo">SOLICITUD NO APROBADA</div>
+    <div class="subtitulo">Lamentablemente, su solicitud no fue aprobada en esta ocasión.</div>
+  </div>
+  {% else %}
+  <div class="dictamen-box dictamen-revision">
+    <div class="icono">⚠</div>
+    <div class="titulo">EN REVISIÓN</div>
+    <div class="subtitulo">Su solicitud requiere una revisión adicional por parte de un analista.</div>
+  </div>
+  {% endif %}
+
+  <!-- ═══ Su solicitud ═══ -->
+  <h2>Su Solicitud</h2>
+  <div class="solicitud-info">
+    <table>
+      <tr>
+        <td class="label">Monto solicitado</td>
+        <td class="value">{{ formato_moneda(ev.monto_credito) }}</td>
+      </tr>
+      <tr>
+        <td class="label">Propósito</td>
+        <td class="value">{{ ev.proposito_credito }}</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ═══ Resultado ═══ -->
+  <h2>Resultado de la Evaluación</h2>
+
+  <div class="score-visual">
+    {% if dictamen_clase == 'aprobado' %}
+      <div class="score-numero" style="color: #10B981;">{{ ev.score_final }}</div>
+    {% elif dictamen_clase == 'rechazado' %}
+      <div class="score-numero" style="color: #EF4444;">{{ ev.score_final }}</div>
+    {% else %}
+      <div class="score-numero" style="color: #F59E0B;">{{ ev.score_final }}</div>
+    {% endif %}
+    <div class="score-label">Puntuación obtenida de 100</div>
+  </div>
+
+  <!-- Puntos positivos -->
+  {% if puntos_positivos %}
+  <h2>Puntos a Su Favor</h2>
+  {% for p in puntos_positivos[:3] %}
+  <div class="punto-item punto-positivo">
+    <span class="icono-punto">✓</span>
+    {{ p }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- Puntos a mejorar (solo si hay) -->
+  {% if puntos_mejorar %}
+  <h2>Áreas de Oportunidad</h2>
+  {% for p in puntos_mejorar[:2] %}
+  <div class="punto-item punto-negativo">
+    <span class="icono-punto">✗</span>
+    {{ p }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <!-- ═══ PÁGINA 2: Solo si RECHAZADO o REVISION ═══ -->
+  {% if dictamen_clase != 'aprobado' %}
+  <div class="page-break"></div>
+
+  <h2>¿Qué Puede Hacer para Mejorar Su Perfil?</h2>
+  <p>A continuación le ofrecemos recomendaciones concretas basadas en su evaluación:</p>
+
+  {% for accion in acciones_mejora %}
+  <div class="mejora-item">
+    <strong>{{ loop.index }}.</strong> {{ accion }}
+  </div>
+  {% endfor %}
+
+  <h2>¿Cuándo Puede Volver a Solicitar?</h2>
+  <p>Le recomendamos esperar <strong>{{ meses_recomendados }} meses</strong> antes de presentar
+     una nueva solicitud. Esto le permitirá atender los puntos mencionados y mejorar
+     su perfil crediticio.</p>
+
+  {% if dictamen_clase == 'revision' %}
+  <div class="solicitud-info">
+    <p style="margin: 0; font-size: 10pt;">
+      <strong>Nota:</strong> Su solicitud se encuentra en revisión manual.
+      Un analista de crédito examinará su caso de forma personalizada.
+      No es necesario volver a presentar la solicitud;
+      será contactado con el resultado final.
+    </p>
+  </div>
+  {% endif %}
+
+  {% endif %}
+
+  <!-- ═══ Footer ═══ -->
+  <div class="footer-doc">
+    Documento generado el {{ timestamp }} | MIHAC v1.0<br>
+    Este documento es informativo. No constituye un contrato.
+  </div>
+
+</body>
+</html>
