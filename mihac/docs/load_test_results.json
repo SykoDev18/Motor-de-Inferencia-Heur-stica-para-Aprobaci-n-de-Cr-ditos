@@ -1,0 +1,107 @@
+{
+  "fecha": "2026-03-01T13:31:52.465897",
+  "motor": [
+    {
+      "n": 10,
+      "total_ms": 15.31,
+      "media_ms": 1.527,
+      "p50_ms": 1.476,
+      "p95_ms": 2.334,
+      "p99_ms": 2.334,
+      "max_ms": 2.334,
+      "min_ms": 0.894,
+      "desv_std_ms": 0.478,
+      "throughput": 653.1,
+      "aprobados": 6,
+      "rechazados": 3,
+      "revision": 1,
+      "errores": 0
+    },
+    {
+      "n": 50,
+      "total_ms": 76.82,
+      "media_ms": 1.532,
+      "p50_ms": 1.431,
+      "p95_ms": 2.366,
+      "p99_ms": 2.617,
+      "max_ms": 2.617,
+      "min_ms": 0.582,
+      "desv_std_ms": 0.501,
+      "throughput": 650.9,
+      "aprobados": 26,
+      "rechazados": 21,
+      "revision": 3,
+      "errores": 0
+    },
+    {
+      "n": 100,
+      "total_ms": 73.16,
+      "media_ms": 0.73,
+      "p50_ms": 0.507,
+      "p95_ms": 1.815,
+      "p99_ms": 1.998,
+      "max_ms": 1.998,
+      "min_ms": 0.307,
+      "desv_std_ms": 0.474,
+      "throughput": 1366.8,
+      "aprobados": 47,
+      "rechazados": 47,
+      "revision": 6,
+      "errores": 0
+    },
+    {
+      "n": 500,
+      "total_ms": 214.89,
+      "media_ms": 0.428,
+      "p50_ms": 0.376,
+      "p95_ms": 0.809,
+      "p99_ms": 1.05,
+      "max_ms": 1.173,
+      "min_ms": 0.02,
+      "desv_std_ms": 0.16,
+      "throughput": 2326.7,
+      "aprobados": 246,
+      "rechazados": 219,
+      "revision": 31,
+      "errores": 4
+    },
+    {
+      "n": 1000,
+      "total_ms": 412.62,
+      "media_ms": 0.411,
+      "p50_ms": 0.364,
+      "p95_ms": 0.777,
+      "p99_ms": 1.027,
+      "max_ms": 1.375,
+      "min_ms": 0.02,
+      "desv_std_ms": 0.155,
+      "throughput": 2423.5,
+      "aprobados": 521,
+      "rechazados": 395,
+      "revision": 74,
+      "errores": 10
+    }
+  ],
+  "componentes": {
+    "validador": {
+      "n": 1000,
+      "media_ms": 0.006,
+      "max_ms": 0.034,
+      "throughput": 154609.7
+    },
+    "scorer": {
+      "n": 1000,
+      "media_ms": 0.022,
+      "max_ms": 0.206,
+      "throughput": 44447.0
+    }
+  },
+  "web": {
+    "post_n": 50,
+    "post_media_ms": 15.25,
+    "post_max_ms": 143.76,
+    "dashboard_n": 30,
+    "dashboard_media_ms": 10.6
+  },
+  "consistencia": true
+}
